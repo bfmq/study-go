@@ -13,7 +13,7 @@ var redisdb *redis.Client
 func initRedis() (err error) {
 	redisdb = redis.NewClient(&redis.Options{
 		Addr:     "10.10.2.20:6379",
-		Password: "tPQP4pdb6MuXcQXur4YnXgdBvzODP0lT9Yu4Y2CXXzzh0LHcmswPXf3FtPb1YOjJ",
+		Password: "",
 		DB:       0,
 		PoolSize: 100,
 	})

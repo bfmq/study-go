@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	dsn := "root:nrXTTQguLpXJGIkrExklwecwiQGQsjqYM1OVM35YHf12aK6LE5EnlopeWrno@tcp(10.10.2.20:3306)/go_test"
+	dsn := "root:@tcp(10.10.2.20:3306)/go_test"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil { // 只是验证dsn格式
 		fmt.Printf("dsn:%s invalid,err:%s\n", dsn, err)
