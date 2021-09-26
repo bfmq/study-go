@@ -6,9 +6,8 @@ import (
 )
 
 func majorityElement(nums []int) (result int) {
-	numsLength := len(nums)
 	sort.Ints(nums)
-	return nums[numsLength/2]
+	return nums[len(nums)/2]
 }
 
 func main() {
