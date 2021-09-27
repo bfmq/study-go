@@ -11,7 +11,7 @@ type Array struct {
 }
 
 // 初始化
-func InitArray(capacity uint) *Array {
+func NewArray(capacity uint) *Array {
 	if capacity == 0 {
 		return nil
 	}
