@@ -18,7 +18,7 @@ func NewLinkedListStack() *LinkedListStack {
 }
 
 // 验证是否为空
-func (lls *LinkedListStack) isEmpty() bool {
+func (lls *LinkedListStack) IsEmpty() bool {
 	return lls.topNode == nil
 }
 
@@ -29,7 +29,7 @@ func (lls *LinkedListStack) Push(v interface{}) {
 
 // 出栈
 func (lls *LinkedListStack) Pop() interface{} {
-	if lls.isEmpty() {
+	if lls.IsEmpty() {
 		return nil
 	}
 	v := lls.topNode.val
@@ -39,8 +39,8 @@ func (lls *LinkedListStack) Pop() interface{} {
 }
 
 // 获取栈顶元素
-func (lls *LinkedListStack) Top(v interface{}) interface{} {
-	if lls.isEmpty() {
+func (lls *LinkedListStack) Top() interface{} {
+	if lls.IsEmpty() {
 		return nil
 	}
 	return lls.topNode.val
@@ -53,7 +53,7 @@ func (lls *LinkedListStack) Flush() {
 
 // 打印
 func (lls *LinkedListStack) Print() {
-	if lls.isEmpty() {
+	if lls.IsEmpty() {
 		fmt.Println("empty stack")
 	} else {
 		for i := lls.topNode; i != nil; i = i.next {

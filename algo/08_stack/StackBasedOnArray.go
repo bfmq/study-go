@@ -15,7 +15,7 @@ func NewArrayStack() *ArrayStack {
 }
 
 // 验证是否为空
-func (as *ArrayStack) isEmpty() bool {
+func (as *ArrayStack) IsEmpty() bool {
 	if as.top < 0 {
 		return true
 	}
@@ -35,7 +35,7 @@ func (as *ArrayStack) Push(v interface{}) {
 
 // 出栈
 func (as *ArrayStack) Pop() interface{} {
-	if as.isEmpty() {
+	if as.IsEmpty() {
 		return nil
 	}
 	v := as.data[as.top]
@@ -45,8 +45,8 @@ func (as *ArrayStack) Pop() interface{} {
 }
 
 // 获取栈顶元素
-func (as *ArrayStack) Top(v interface{}) interface{} {
-	if as.isEmpty() {
+func (as *ArrayStack) Top() interface{} {
+	if as.IsEmpty() {
 		return nil
 	}
 	return as.data[as.top]
@@ -59,7 +59,7 @@ func (as *ArrayStack) Flush() {
 
 // 打印
 func (as *ArrayStack) Print() {
-	if as.isEmpty() {
+	if as.IsEmpty() {
 		fmt.Println("empty stack")
 	} else {
 		for i := as.top; i >= 0; i-- {
