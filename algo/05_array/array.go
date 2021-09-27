@@ -79,6 +79,15 @@ func (a *Array) Find(index uint) (int, error) {
 	return a.data[index], nil
 }
 
+// 打印
+func (a *Array) Print() {
+	var s string
+	for i := uint(0); i < a.Len(); i++ {
+		s += fmt.Sprintf("|%+v", a.data[i])
+	}
+	fmt.Println(s)
+}
+
 func main() {
 	arr := InitArray(3)
 	err := arr.InsertToTail(1)
@@ -97,15 +106,18 @@ func main() {
 	if err != nil {
 		fmt.Printf("insert faild,err:%s\n", err)
 	}
+	arr.Print()
 
 	v, err := arr.Delete(1)
 	if err != nil {
 		fmt.Printf("delete faild,err:%s\n", err)
 	}
 	fmt.Println(v)
+	arr.Print()
 
 	err = arr.InsertToTail(4)
 	if err != nil {
 		fmt.Printf("insert faild,err:%s\n", err)
 	}
+	arr.Print()
 }
