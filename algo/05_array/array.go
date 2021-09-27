@@ -89,7 +89,7 @@ func (a *Array) Print() {
 }
 
 func main() {
-	arr := InitArray(3)
+	arr := NewArray(3)
 	err := arr.InsertToTail(1)
 	if err != nil {
 		fmt.Printf("insert faild,err:%s\n", err)
