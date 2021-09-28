@@ -4,8 +4,16 @@ import (
 	"fmt"
 )
 
-func reverseBits(num uint32) uint32 {
-	return 0
+func reverseBits(num uint32) (result uint32) {
+	for i := 0; i < 32; i++ {
+		x := num & 1
+		num >>= 1
+		result <<= 1
+		if x == 1 {
+			result++
+		}
+	}
+	return
 }
 
 func main() {
