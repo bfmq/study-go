@@ -101,3 +101,5 @@ index.html           100% |*****************************************************
     inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
        valid_lft forever preferred_lft forever
 
+#### 将镜像推送至 Docker 官方镜像仓库
+#### docker push cncamp:1即可，但是要docker login会冲掉私库密码不太方便就不推了，镜像也扔github上了
