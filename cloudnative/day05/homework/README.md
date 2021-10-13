@@ -1,8 +1,7 @@
 # 云原生
 ## 使用busybox原因就是比较小，但是busybox实际上网络不工作的，实际情况中可以使用FROM golang或者精简版的centos等等，但是这些元镜像比较大，镜像不好传github了，所以这次元镜像就用busybox了
 
-### 其他作业要求
-#### 封镜像命令
+### 封镜像命令
 #### docker build -t cncamp:1 . --network=host
 ##### [root@devops-bj-yz-dx1 k8s-tmp]# docker build -t cncamp:1 . --network=host
 ##### Sending build context to Docker daemon  9.474MB
@@ -29,8 +28,8 @@
 ##### Successfully built a183beb27efa
 ##### Successfully tagged cncamp:1
 
-#### 通过 Docker 命令本地启动 httpserver
-#### docker run -d -p 30001:8000 a183beb27efa
+### 通过 Docker 命令本地启动 httpserver
+### docker run -d -p 30001:8000 a183beb27efa
 ##### [root@devops-bj-yz-dx1 k8s-tmp]# docker image ls
 ##### REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 ##### cncamp              1                   a183beb27efa        28 seconds ago      20.2MB
@@ -85,8 +84,8 @@
 ##### [GIN] 2021/10/13 - 08:51:14 | 200 |     110.371µs |       127.0.0.1 | GET      "/healthz/"
 ##### ^C
 
-#### 通过 nsenter 进入容器查看 IP 配置
-#### docker inspect xxx 
+### 通过 nsenter 进入容器查看 IP 配置
+### docker inspect xxx 
 #### nsenter -t xxx -n ip a
 ##### [root@devops-bj-yz-dx1 k8s-tmp]# docker inspect 247db2cad9ed | grep Pid
 #####             "Pid": 66735,
@@ -102,5 +101,5 @@
 #####     inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
 #####        valid_lft forever preferred_lft forever
 
-#### 将镜像推送至 Docker 官方镜像仓库
-#### docker push cncamp:1即可，但是要docker login会冲掉私库密码不太方便就不推了，镜像也扔github上了
+### 将镜像推送至 Docker 官方镜像仓库
+### docker push cncamp:1即可，但是要docker login会冲掉私库密码不太方便就不推了，镜像也扔github上了
