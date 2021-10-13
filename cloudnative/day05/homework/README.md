@@ -1,8 +1,7 @@
-# 云原生
 ## 使用busybox原因就是比较小，但是busybox实际上网络不工作的，实际情况中可以使用FROM golang或者精简版的centos等等，但是这些元镜像比较大，镜像不好传github了，所以这次元镜像就用busybox了
 
 ### 封镜像命令
-#### docker build -t cncamp:1 . --network=host
+### docker build -t cncamp:1 . --network=host
 ##### [root@devops-bj-yz-dx1 k8s-tmp]# docker build -t cncamp:1 . --network=host
 ##### Sending build context to Docker daemon  9.474MB
 ##### Step 1/6 : FROM busybox
@@ -86,7 +85,7 @@
 
 ### 通过 nsenter 进入容器查看 IP 配置
 ### docker inspect xxx 
-#### nsenter -t xxx -n ip a
+### nsenter -t xxx -n ip a
 ##### [root@devops-bj-yz-dx1 k8s-tmp]# docker inspect 247db2cad9ed | grep Pid
 #####             "Pid": 66735,
 #####             "PidMode": "",
