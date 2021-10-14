@@ -35,7 +35,6 @@
 ##### busybox             latest              16ea53ea7c65        4 weeks ago         1.24MB
 ##### openjdk             8-alpine            a3562aa0b991        2 years ago         105MB
 ##### [root@devops-bj-yz-dx1 k8s-tmp]# docker run -d -p 30001:8000 a183beb27efa
-##### WARNING: IPv4 forwarding is disabled. Networking will not work.
 ##### 247db2cad9ed23e0e1c8e14bf89bd2ebab35ee719e0755c451b1dad704144175
 ##### [root@devops-bj-yz-dx1 k8s-tmp]# netstat -tpln|grep 30001
 ##### tcp6       0      0 :::30001                :::*                    LISTEN      64460/docker-proxy  
@@ -82,6 +81,8 @@
 ##### 2021/10/13 08:51:14 给客户端的返回码----------------> 200
 ##### [GIN] 2021/10/13 - 08:51:14 | 200 |     110.371µs |       127.0.0.1 | GET      "/healthz/"
 ##### ^C
+##### [root@devops-bj-yz-dx1 k8s-tmp]# curl 127.0.0.1:30001/healthz/
+##### {"code":200}
 
 ### 通过 nsenter 进入容器查看 IP 配置
 ### docker inspect xxx 
