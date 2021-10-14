@@ -1,4 +1,4 @@
-## 使用busybox原因就是比较小，但是busybox实际上网络不工作的，实际情况中可以使用FROM golang或者精简版的centos等等，但是这些元镜像比较大，镜像不好传github了，所以这次元镜像就用busybox了
+## 使用busybox原因就是比较小，实际情况中可以使用FROM golang或者精简版的centos等等，但是这些元镜像比较大，镜像不好传github了，所以这次元镜像就用busybox了
 
 ### 封镜像命令
 ### docker build -t cncamp:1 . --network=host
