@@ -26,7 +26,7 @@ func diameterOfBinaryTree(root *TreeNode) int {
 		return max(L, R) + 1
 	}
 
-	_ = depth(root)
+	depth(root)
 	return result - 1
 }
 
