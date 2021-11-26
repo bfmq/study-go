@@ -1,0 +1,286 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: httpserver-configmap
+  namespace: pro
+data:
+  VERSION: 'v6.6.6'
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: httpserver-cncamp-com
+  namespace: pro
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - httpserver.cncamp.com
+    port:
+      number: 80	
+      name: http
+      protocol: HTTP
+  - hosts:
+    - gateway.renrenchongdian.com
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE    --->当时调1.4.6版本的istio，这个参数选透传模式好像还有bug
+      privateKey: /etc/istio/ingressgateway-certs/tls.key
+      serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: httpserver-cncamp-com
+  namespace: pro
+spec:
+  hosts:
+  - httpserver.cncamp.com
+  gateways:
+  - httpserver-cncamp-com
+  http:
+  - match:
+    - sourceLabels:   --->这里基于匹配内部标签来分流的，外部访问是基于特殊header头标识
+        gary: "true"
+    route:
+    - destination:
+        host: httpserver-cncamp-com
+        subset: gary
+  - route:
+    - destination:
+        host: httpserver-cncamp-com
+        subset: green
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: httpserver-cncamp-com
+  namespace: pro
+spec:
+  host: httpserver-cncamp-com
+  subsets:
+  - name: green
+    labels:
+      gary: "false"
+  - name: gary
+    labels:
+      gary: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpserver-cncamp-com
+  namespace: pro
+  labels:
+    projectName: httpserver-cncamp-com
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8000
+  selector:
+    projectName: httpserver-cncamp-com
+    projectType: golang
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpserver-cncamp-com-gary
+  namespace: pro
+  labels:
+    projectName: httpserver-cncamp-com
+    projectType: golang
+    gary: "true"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      projectName: httpserver-cncamp-com
+      projectType: golang
+      gary: "true"
+  template:
+    metadata:
+      labels:
+        projectName: httpserver-cncamp-com
+        projectType: golang
+        gary: "true"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: projectName
+                operator: In
+                values:
+                - httpserver-cncamp-com
+            topologyKey: "kubernetes.io/hostname"
+      imagePullSecrets:
+        - name: aliyun-registry
+      containers:
+      - name: httpserver-cncamp-com
+        image: 'httpserver-cncamp-com:latest'
+        imagePullPolicy: Always
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "you can do something"]
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "you can do something，我们会给抓一些问题项目的内存报告传到对象存储里"]
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 300m
+          limits:
+            memory: 2Gi
+            cpu: 1
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        startupProbe:           # 这探针以前没用过，1.16加进来的
+          httpGet:
+            path: /healthz/
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 15
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 10
+        readinessProbe:
+          httpGet:
+            path: /healthz/
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /healthz/
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        env:
+        - name: projectName
+          value: "httpserver-cncamp-com"
+        - name: VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: httpserver-configmap
+              key: VERSION
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpserver-cncamp-com
+  namespace: pro
+  labels:
+    projectName: httpserver-cncamp-com
+    projectType: golang
+    gary: "false"
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      projectName: httpserver-cncamp-com
+      projectType: golang
+      gary: "false"
+  template:
+    metadata:
+      labels:
+        projectName: httpserver-cncamp-com
+        projectType: golang
+        gary: "false"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: projectName
+                operator: In
+                values:
+                - httpserver-cncamp-com
+            topologyKey: "kubernetes.io/hostname"
+      imagePullSecrets:
+        - name: aliyun-registry
+      containers:
+      - name: httpserver-cncamp-com
+        image: 'httpserver-cncamp-com:latest'
+        imagePullPolicy: Always
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "you can do something"]
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "you can do something，我们会给抓一些问题项目的内存报告传到对象存储里"]
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 500m
+          limits:
+            memory: 4Gi
+            cpu: 2
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        startupProbe:
+          httpGet:
+            path: /healthz/
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 15
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 10
+        readinessProbe:
+          httpGet:
+            path: /healthz/
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /healthz/
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        env:
+        - name: projectName
+          value: "httpserver-cncamp-com"
+        - name: VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: httpserver-configmap
+              key: VERSION
