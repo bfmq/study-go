@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -9,25 +8,19 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/chenjiandongx/ginprom"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
-
-func IPCodeMiddle() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Next()
-		ip := c.Request.RemoteAddr
-		code := c.Writer.Status()
-		log.Println("客户端地址---------------->", ip)
-		log.Println("给客户端的返回码---------------->", code)
-	}
-}
 
 func main() {
 	router := gin.Default()
 	router.Use(cors.Default())
-	router.Use(IPCodeMiddle())
+	router.Use(ginprom.PromMiddleware(nil))
 
 	{
 		router.GET("/healthz/", healthzGetHandle)
+		// 要求2：增加metrics监控
+		router.GET("/metrics/", ginprom.PromHandler(promhttp.Handler()))
 		router.GET("/delay/", delayGetHandle)
 	}
 
