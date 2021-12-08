@@ -1,7 +1,8 @@
 ### yaml文件修改成了仅deploy，增加了annotations及相关监控参数配置
 ### 源代码增加基于prometheus的监控指标获取，添加一个测试用延迟处理函数
-### 要求4
+### 要求4 获取指标数据
 ```
+http://127.0.0.1:8000/metrics/返回结果
 # HELP go_gc_duration_seconds A summary of the pause duration of garbage collection cycles.
 # TYPE go_gc_duration_seconds summary
 go_gc_duration_seconds{quantile="0"} 0
