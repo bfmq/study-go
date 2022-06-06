@@ -2,65 +2,52 @@ package main
 
 import "fmt"
 
-type BaseDB struct {
-	address string
-	port    int64
-	user    string
-	passwd  string
+type Car interface {
+	drive()
 }
 
-//Connect()应该返回的是连接对象,这里做了省略,所以用string来代替
-type DBconnect interface {
-	Init(address string, port int64, account string, passwd string)
-	Connect() string
+type bmw struct {
+	name string
 }
 
-func (this *BaseDB) Init(address string, port int64, user string, passwd string) {
-	this.address = address
-	this.port = port
-	this.user = user
-	this.passwd = passwd
+func (b *bmw) drive() {
+	fmt.Println("正在驾驶宝马...")
 }
 
-type MysqlDB struct {
-	BaseDB
+type tesla struct {
+	name string
 }
 
-func (mdb *MysqlDB) Connect() string {
-	return fmt.Sprintf("连接了mysql,地址是:%s", fmt.Sprintf("%s:%d", mdb.address, mdb.port))
+func (t *tesla) drive() {
+	fmt.Println("正在驾驶特斯拉...")
 }
 
-type MongoDB struct {
-	BaseDB
+type porsche struct {
+	name string
 }
 
-func (mdb *MongoDB) Connect() string {
-	return fmt.Sprintf("mongo,地址是:%s", fmt.Sprintf("%s:%d", mdb.address, mdb.port))
+func (p *porsche) drive() {
+	fmt.Println("正在驾驶保时捷...")
 }
 
-// ==========================================================================================
-
-type CreateDBFactory struct{}
-
-func (cdb *CreateDBFactory) CreateDBConnect(dbname string) (bdb DBconnect, err error) {
-	switch dbname {
-	case "mysql":
-		bdb = &MysqlDB{}
-	case "mongodb":
-		bdb = &MongoDB{}
+func CreateCarFactory(car string) Car {
+	switch car {
+	case "bmw":
+		return &bmw{}
+	case "tesla":
+		return &tesla{}
+	case "porsche":
+		return &porsche{}
 	default:
-		bdb = &MysqlDB{}
+		return nil
 	}
-	return
 }
 
 func main() {
-	dbFactory := &CreateDBFactory{}
-	mysqlObject, err := dbFactory.CreateDBConnect("mysql")
-	if err != nil {
-		panic("mysql error")
-	}
-	mysqlObject.Init("mysqladdress", 3306, "kengerukong", "kengerukong")
-	mysqlConnect := mysqlObject.Connect()
-	fmt.Println("mysql connect is " + mysqlConnect)
+	car := CreateCarFactory("bmw")
+	car.drive()
+	car = CreateCarFactory("tesla")
+	car.drive()
+	car = CreateCarFactory("porsche")
+	car.drive()
 }
