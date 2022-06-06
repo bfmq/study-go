@@ -2,74 +2,77 @@ package main
 
 import "fmt"
 
-type BaseDBV2 struct {
-	address string
-	port    int64
-	account string
-	passwd  string
+type number struct {
+	a float64
+	b float64
 }
 
-//Connect()应该返回的是连接对象,这里做了省略,所以用string来代替
-type DBconnectV2 interface {
-	InitV2(address string, port int64, account string, passwd string)
-	ConnectV2() string
+type Operation interface {
+	SetA(float64)
+	SetB(float64)
+	GetResult() float64
 }
 
-func (this *BaseDBV2) InitV2(address string, port int64, account string, passwd string) {
-	this.address = address
-	this.port = port
-	this.account = account
-	this.passwd = passwd
+func (num *number) SetA(n float64) {
+	num.a = n
+}
+func (num *number) SetB(n float64) {
+	num.b = n
 }
 
-type MysqlDBV2 struct {
-	BaseDBV2
+type addOperation struct {
+	number
 }
 
-func (mdb *MysqlDBV2) ConnectV2() string {
-	return fmt.Sprintf("连接了mysql,地址是:%s", fmt.Sprintf("%s:%d", mdb.address, mdb.port))
+func (num *addOperation) GetResult() float64 {
+	return num.a + num.b
 }
 
-type MongoDBV2 struct {
-	BaseDBV2
+type subOperation struct {
+	number
 }
 
-func (mdb *MongoDBV2) ConnectV2() string {
-	return fmt.Sprintf("mongo,地址是:%s", fmt.Sprintf("%s:%d", mdb.address, mdb.port))
+func (num *subOperation) GetResult() float64 {
+	return num.a - num.b
 }
 
-// ==========================================================================================
-
-type CreateMysqlDBFactoryV2 struct{}
-
-func (cdb *CreateMysqlDBFactoryV2) CreateDBConnectV2() (bdb *MysqlDBV2, err error) {
-	bdb = &MysqlDBV2{}
-	return bdb, nil
+type mulOperation struct {
+	number
 }
 
-type CreateMongodbDBFactoryV2 struct{}
+func (num *mulOperation) GetResult() float64 {
+	return num.a * num.b
+}
 
-func (cdb *CreateMongodbDBFactoryV2) CreateDBConnectV2() (bdb *MongoDBV2, err error) {
-	bdb = &MongoDBV2{}
-	return bdb, nil
+type Factory interface {
+	CreateOperation() Operation
+}
+
+type AddFactory struct {
+}
+
+func (a *AddFactory) CreateOperation() Operation {
+	return &addOperation{}
+}
+
+type SubFactory struct {
+}
+
+func (s *SubFactory) CreateOperation() Operation {
+	return &subOperation{}
+}
+
+type MulFactory struct {
+}
+
+func (m *MulFactory) CreateOperation() Operation {
+	return &mulOperation{}
 }
 
 func main() {
-	mysqlFactory := &CreateMysqlDBFactoryV2{}
-	mysqlObject, err := mysqlFactory.CreateDBConnectV2()
-	if err != nil {
-		panic("mysql error")
-	}
-	mysqlObject.InitV2("mysqladdress", 3306, "kengerukong", "kengerukong")
-	mysqlConnect := mysqlObject.ConnectV2()
-	fmt.Println("mysql connect is " + mysqlConnect)
-
-	mongodbFactory := &CreateMongodbDBFactoryV2{}
-	mongodbObject, err := mongodbFactory.CreateDBConnectV2()
-	if err != nil {
-		panic("mongodb error")
-	}
-	mongodbObject.InitV2("mongodbaddress", 3307, "kengerukong", "kengerukong")
-	mongodbConnect := mongodbObject.ConnectV2()
-	fmt.Println("mongodb connect is " + mongodbConnect)
+	afc := &AddFactory{}
+	opAdd := afc.CreateOperation()
+	opAdd.SetA(1)
+	opAdd.SetB(2)
+	fmt.Println(opAdd.GetResult())
 }
