@@ -1,60 +1,30 @@
 package main
 
-import (
-	"errors"
-	"sync"
-)
+import "fmt"
 
-type server interface {
-	handleRequest(string, string) (int, error)
+type ITask interface {
+	RentHouse(desc string, price int)
 }
 
-type RealRequest struct{}
+type Task struct{}
 
-func (request *RealRequest) handleRequest(url string, method string) (int, error) {
-	if url == "zhihu.com" && method == "post" {
-		return 200, nil
-	}
-	return 404, errors.New("not find, 404")
+func (t *Task) RentHouse(desc string, price int) {
+	fmt.Println(fmt.Sprintf("租房子的地址%s,价格%d,中介费%d", desc, price, price))
 }
 
-type ngx_http_proxy_module struct {
-	request          *RealRequest
-	maxRequestNum    int
-	handleRequestMap map[string]int
+type AgentTask struct {
+	task *Task
 }
 
-var instance *ngx_http_proxy_module
-var once sync.Once
-
-func GetNgxProxyInstance(maxRequestNum int) *ngx_http_proxy_module {
-	once.Do(func() {
-		instance = &ngx_http_proxy_module{
-			request:          &RealRequest{},
-			maxRequestNum:    maxRequestNum,
-			handleRequestMap: make(map[string]int, 0),
-		}
-	})
-	return instance
+func NewAgentTask() *AgentTask {
+	return &AgentTask{task: &Task{}}
 }
 
-func (nginx *ngx_http_proxy_module) check(url string) error {
-	if _, ok := nginx.handleRequestMap[url]; !ok {
-		return nil
-	}
-	if nginx.handleRequestMap[url] >= nginx.maxRequestNum {
-		return errors.New("the num of request more than limit")
-	}
-	return nil
-}
-func (nginx *ngx_http_proxy_module) addRequstCount(url string) {
-	nginx.handleRequestMap[url] = nginx.handleRequestMap[url] + 1
+func (t *AgentTask) RentHouse(desc string, price int) {
+	t.task.RentHouse(desc, price)
 }
 
-func (nginx *ngx_http_proxy_module) HandleRequest(url string, method string) (int, error) {
-	if err := nginx.check(url); err != nil {
-		return 403, err
-	}
-	nginx.addRequstCount(url)
-	return nginx.request.handleRequest(url, method)
+func main() {
+	a := NewAgentTask()
+	a.RentHouse("sdsssssssssssssssss", 300)
 }
