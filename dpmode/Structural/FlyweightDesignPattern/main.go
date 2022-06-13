@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type FlyWeight struct {
 	Name string
 }
@@ -23,4 +25,13 @@ func (f *FlyWeightFactory) GetFlyWeight(name string) *FlyWeight {
 		f.pool[name] = weight
 	}
 	return weight
+}
+
+func main() {
+	factory := NewFlyWeightFactory()
+	hong := factory.GetFlyWeight("hong beauty")
+	xiang := factory.GetFlyWeight("xiang beauty")
+	fmt.Println(len(factory.pool))
+	fmt.Println(hong)
+	fmt.Println(xiang)
 }
