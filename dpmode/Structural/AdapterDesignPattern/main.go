@@ -1,42 +1,26 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type OldInterface interface {
-	InsertToDatabase(Data interface{}) (bool, error)
+type Target interface {
+	Execute()
 }
 
-type AddCustomInfoToMysql struct {
-	DbName string
-}
+type Source struct{}
 
-func (pA *AddCustomInfoToMysql) InsertToDatabase(info interface{}) (bool, error) {
-	switch info.(type) {
-	case string:
-		fmt.Println("add ", info.(string), " to ", pA.DbName, " successful!")
-	}
-	return true, nil
-}
-
-type NewInterface interface {
-	SaveData(Data interface{}) (bool, error)
+func (a *Source) SepcificExecute() {
+	fmt.Println("原充电...")
 }
 
 type Adapter struct {
-	OldInterface
+	*Source
 }
 
-func (pA *Adapter) SaveData(Data interface{}) (bool, error) {
-	fmt.Println("In Adapter")
-	return pA.InsertToDatabase(Data)
+func (a *Adapter) Execute() {
+	a.SepcificExecute()
 }
 
 func main() {
-
-	var iNew NewInterface
-	iNew = &Adapter{OldInterface: &AddCustomInfoToMysql{DbName: "mysql"}}
-	iNew.SaveData("helloworld")
-	return
+	a := Adapter{}
+	a.Execute()
 }
