@@ -19,5 +19,4 @@ func main() {
 
 	fmt.Println(ptObj)
 	fmt.Println(ptCopy)
-
 }
