@@ -1,0 +1,13 @@
+{
+    "folders": [
+		{
+            "name": "crd",
+			"path": "./"
+		}
+	],
+	"settings": {
+		"gopls": {
+			"build.experimentalWorkspaceModule": true
+		}
+	}
+}
