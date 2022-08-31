@@ -4,6 +4,7 @@ import (
 	"context"
 	"reflect"
 	"time"
+
 	v14 "k8s.io/api/core/v1"
 	v12 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -64,7 +65,7 @@ func (c *controller) deleteIngress(obj interface{}) {
 
 func (c *controller) Run(stopChan chan struct{}) {
 	for i := 0; i < workNum; i++ {
-		go wait.Until(c.worker, time.Minute, stopChan)
+		go wait.Until(c.worker, time.Second, stopChan)
 	}
 	<-stopChan
 }
@@ -125,7 +126,7 @@ func (c *controller) syncService(key string) (err error) {
 	return nil
 }
 
-func (c *controller) constructIngress(service *v14.Service)  *v12.Ingress {
+func (c *controller) constructIngress(service *v14.Service) *v12.Ingress {
 	ingress := &v12.Ingress{}
 	ingress.ObjectMeta.OwnerReferences = []v13.OwnerReference{
 		*v13.NewControllerRef(service, v14.SchemeGroupVersion.WithKind("Service")),
