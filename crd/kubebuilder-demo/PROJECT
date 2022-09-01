@@ -1,0 +1,6 @@
+domain: bfmq.com
+layout:
+- go.kubebuilder.io/v3
+projectName: kubebuilder-demo
+repo: crd/kubebuilder-demo
+version: "3"
