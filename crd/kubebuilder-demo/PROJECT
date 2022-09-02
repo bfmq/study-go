@@ -3,4 +3,14 @@ layout:
 - go.kubebuilder.io/v3
 projectName: kubebuilder-demo
 repo: crd/kubebuilder-demo
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: bfmq.com
+  group: ingress
+  kind: App
+  path: crd/kubebuilder-demo/api/v1beta1
+  version: v1beta1
 version: "3"
