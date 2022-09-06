@@ -19,12 +19,18 @@ package controllers
 import (
 	"context"
 
+	"k8s.io/apimachinery/pkg/api/errors"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	netv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	ingressv1beta1 "crd/kubebuilder-demo/api/v1beta1"
+	"crd/kubebuilder-demo/controllers/utils"
 )
 
 // AppReconciler reconciles a App object
@@ -47,9 +53,26 @@ type AppReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.2/pkg/reconcile
 func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	logger := log.FromContext(ctx)
 
 	// TODO(user): your logic here
+	app := &ingressv1beta1.App{}
+	err := r.Get(ctx, req.NamespacedName, app)
+	if err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	// Deployment的处理
+	depoyment := utils.NewDeployment(app)
+	err = controllerutil.SetControllerReference(app, depoyment, r.Scheme)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	d := &appsv1.Deployment{}
+	err = r.Get(ctx, req.NamespacedName, d)
+	if errors.IsNotFound(err) {
+		r.Create(ctx, depoyment)
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -58,5 +81,8 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 func (r *AppReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&ingressv1beta1.App{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
+		Owns(&netv1.Ingress{}).
 		Complete(r)
 }
