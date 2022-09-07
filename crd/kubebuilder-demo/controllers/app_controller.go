@@ -67,27 +67,21 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	}
 
 	// Deployment的处理
-	depoyment := utils.NewDeployment(app)
-	err = controllerutil.SetControllerReference(app, depoyment, r.Scheme)
+	deployment := utils.NewDeployment(app)
+	err = controllerutil.SetControllerReference(app, deployment, r.Scheme)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
 	d := &appsv1.Deployment{}
-	err = r.Get(ctx, req.NamespacedName, d)
-	if err != nil {
+	if err := r.Get(ctx, req.NamespacedName, d); err != nil {
 		if errors.IsNotFound(err) {
-			err = r.Create(ctx, depoyment)
-			if err != nil {
+			if err := r.Create(ctx, deployment); err != nil {
 				logger.Error(err, "create deploy failed")
 				return ctrl.Result{}, err
 			}
-		} else {
-			return ctrl.Result{}, err
 		}
 	} else {
-		err = r.Update(ctx, depoyment)
-		if err != nil {
-			logger.Error(err, "update deploy failed")
+		if err := r.Update(ctx, deployment); err != nil {
 			return ctrl.Result{}, err
 		}
 	}
@@ -99,11 +93,9 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		return ctrl.Result{}, err
 	}
 	s := &corev1.Service{}
-	err = r.Get(ctx, types.NamespacedName{Name: app.Name, Namespace: app.Namespace}, s)
-	if err != nil {
+	if err := r.Get(ctx, types.NamespacedName{Name: app.Name, Namespace: app.Namespace}, s); err != nil {
 		if errors.IsNotFound(err) && app.Spec.EnabledService {
-			err = r.Create(ctx, service)
-			if err != nil {
+			if err := r.Create(ctx, service); err != nil {
 				logger.Error(err, "create service failed")
 				return ctrl.Result{}, err
 			}
@@ -114,17 +106,11 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	} else {
 		if app.Spec.EnabledService {
 			logger.Info("skip update")
-			// err = r.Update(ctx, service)
-			// if err != nil {
-			// 	logger.Error(err, "update service failed")
-			// 	return ctrl.Result{}, err
-			// }
 		} else {
-			err = r.Delete(ctx, service)
-			if err != nil {
-				logger.Error(err, "delete service failed")
+			if err := r.Delete(ctx, s); err != nil {
 				return ctrl.Result{}, err
 			}
+
 		}
 	}
 
@@ -135,11 +121,9 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		return ctrl.Result{}, err
 	}
 	i := &netv1.Ingress{}
-	err = r.Get(ctx, types.NamespacedName{Name: app.Name, Namespace: app.Namespace}, i)
-	if err != nil {
+	if err := r.Get(ctx, types.NamespacedName{Name: app.Name, Namespace: app.Namespace}, i); err != nil {
 		if errors.IsNotFound(err) && app.Spec.EnabledIngress {
-			err = r.Create(ctx, ingress)
-			if err != nil {
+			if err := r.Create(ctx, ingress); err != nil {
 				logger.Error(err, "create ingress failed")
 				return ctrl.Result{}, err
 			}
@@ -150,20 +134,12 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	} else {
 		if app.Spec.EnabledIngress {
 			logger.Info("skip update")
-			// err = r.Update(ctx, ingress)
-			// if err != nil {
-			// 	logger.Error(err, "update ingress failed")
-			// 	return ctrl.Result{}, err
-			// }
 		} else {
-			err = r.Delete(ctx, ingress)
-			if err != nil {
-				logger.Error(err, "delete ingress failed")
+			if err := r.Delete(ctx, i); err != nil {
 				return ctrl.Result{}, err
 			}
 		}
 	}
-
 	return ctrl.Result{}, nil
 }
 
