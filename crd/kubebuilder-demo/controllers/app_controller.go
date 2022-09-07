@@ -24,6 +24,7 @@ import (
 	netv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -42,6 +43,9 @@ type AppReconciler struct {
 //+kubebuilder:rbac:groups=ingress.bfmq.com,resources=apps,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=ingress.bfmq.com,resources=apps/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=ingress.bfmq.com,resources=apps/finalizers,verbs=update
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=networking.k8s.io,resources=ingresses,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -95,7 +99,7 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		return ctrl.Result{}, err
 	}
 	s := &corev1.Service{}
-	err = r.Get(ctx, req.NamespacedName, s)
+	err = r.Get(ctx, types.NamespacedName{Name: app.Name, Namespace: app.Namespace}, s)
 	if err != nil {
 		if errors.IsNotFound(err) && app.Spec.EnabledService {
 			err = r.Create(ctx, service)
@@ -109,11 +113,12 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledService {
-			err = r.Update(ctx, service)
-			if err != nil {
-				logger.Error(err, "update service failed")
-				return ctrl.Result{}, err
-			}
+			logger.Info("skip update")
+			// err = r.Update(ctx, service)
+			// if err != nil {
+			// 	logger.Error(err, "update service failed")
+			// 	return ctrl.Result{}, err
+			// }
 		} else {
 			err = r.Delete(ctx, service)
 			if err != nil {
@@ -130,7 +135,7 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		return ctrl.Result{}, err
 	}
 	i := &netv1.Ingress{}
-	err = r.Get(ctx, req.NamespacedName, i)
+	err = r.Get(ctx, types.NamespacedName{Name: app.Name, Namespace: app.Namespace}, i)
 	if err != nil {
 		if errors.IsNotFound(err) && app.Spec.EnabledIngress {
 			err = r.Create(ctx, ingress)
@@ -144,11 +149,12 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledIngress {
-			err = r.Update(ctx, ingress)
-			if err != nil {
-				logger.Error(err, "update ingress failed")
-				return ctrl.Result{}, err
-			}
+			logger.Info("skip update")
+			// err = r.Update(ctx, ingress)
+			// if err != nil {
+			// 	logger.Error(err, "update ingress failed")
+			// 	return ctrl.Result{}, err
+			// }
 		} else {
 			err = r.Delete(ctx, ingress)
 			if err != nil {
