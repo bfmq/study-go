@@ -102,7 +102,7 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledService {
-			logger.Error(err, "skip service update")
+			logger.Info("skip service update")
 			// err = r.Update(ctx, service)
 			// if err != nil {
 			// 	logger.Error(err, "update service failed")
@@ -135,7 +135,7 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledIngress {
-			logger.Error(err, "skip ingress update")
+			logger.Info("skip ingress update")
 			// err = r.Update(ctx, ingress)
 			// if err != nil {
 			// 	logger.Error(err, "update ingress failed")
