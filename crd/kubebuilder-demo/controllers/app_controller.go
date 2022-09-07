@@ -19,10 +19,10 @@ package controllers
 import (
 	"context"
 
-	"k8s.io/apimachinery/pkg/api/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	netv1 "k8s.io/api/networking/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -71,7 +71,81 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	d := &appsv1.Deployment{}
 	err = r.Get(ctx, req.NamespacedName, d)
 	if errors.IsNotFound(err) {
-		r.Create(ctx, depoyment)
+		err = r.Create(ctx, depoyment)
+		if err != nil {
+			logger.Error(err, "create deploy failed")
+			return ctrl.Result{}, err
+		}
+	} else {
+		err = r.Update(ctx, depoyment)
+		if err != nil {
+			logger.Error(err, "update deploy failed")
+			return ctrl.Result{}, err
+		}
+	}
+
+	// Service的处理
+	service := utils.NewService(app)
+	err = controllerutil.SetControllerReference(app, service, r.Scheme)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	s := &corev1.Service{}
+	err = r.Get(ctx, req.NamespacedName, s)
+	if errors.IsNotFound(err) {
+		if app.Spec.EnabledService {
+			err = r.Create(ctx, service)
+			if err != nil {
+				logger.Error(err, "create service failed")
+				return ctrl.Result{}, err
+			}
+		}
+	} else {
+		if app.Spec.EnabledService {
+			err = r.Update(ctx, service)
+			if err != nil {
+				logger.Error(err, "update service failed")
+				return ctrl.Result{}, err
+			}
+		} else {
+			err = r.Delete(ctx, service)
+			if err != nil {
+				logger.Error(err, "delete service failed")
+				return ctrl.Result{}, err
+			}
+		}
+	}
+
+	// Ingress的处理
+	ingress := utils.NewIngress(app)
+	err = controllerutil.SetControllerReference(app, ingress, r.Scheme)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	i := &netv1.Ingress{}
+	err = r.Get(ctx, req.NamespacedName, i)
+	if errors.IsNotFound(err) {
+		if app.Spec.EnabledIngress {
+			err = r.Create(ctx, ingress)
+			if err != nil {
+				logger.Error(err, "create ingress failed")
+				return ctrl.Result{}, err
+			}
+		}
+	} else {
+		if app.Spec.EnabledIngress {
+			err = r.Update(ctx, ingress)
+			if err != nil {
+				logger.Error(err, "update ingress failed")
+				return ctrl.Result{}, err
+			}
+		} else {
+			err = r.Delete(ctx, ingress)
+			if err != nil {
+				logger.Error(err, "delete ingress failed")
+				return ctrl.Result{}, err
+			}
+		}
 	}
 
 	return ctrl.Result{}, nil
