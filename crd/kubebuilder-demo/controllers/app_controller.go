@@ -70,10 +70,14 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	}
 	d := &appsv1.Deployment{}
 	err = r.Get(ctx, req.NamespacedName, d)
-	if errors.IsNotFound(err) {
-		err = r.Create(ctx, depoyment)
-		if err != nil {
-			logger.Error(err, "create deploy failed")
+	if err != nil {
+		if errors.IsNotFound(err) {
+			err = r.Create(ctx, depoyment)
+			if err != nil {
+				logger.Error(err, "create deploy failed")
+				return ctrl.Result{}, err
+			}
+		} else {
 			return ctrl.Result{}, err
 		}
 	} else {
