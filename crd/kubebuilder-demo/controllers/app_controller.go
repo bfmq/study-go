@@ -92,22 +92,24 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	}
 	s := &corev1.Service{}
 	err = r.Get(ctx, req.NamespacedName, s)
-	if errors.IsNotFound(err) {
-		if app.Spec.EnabledService {
+	if err != nil {
+		if errors.IsNotFound(err) && app.Spec.EnabledService {
 			err = r.Create(ctx, service)
 			if err != nil {
 				logger.Error(err, "create service failed")
 				return ctrl.Result{}, err
 			}
 		}
+		if !errors.IsNotFound(err) && app.Spec.EnabledService {
+			return ctrl.Result{}, err
+		}
 	} else {
 		if app.Spec.EnabledService {
-			logger.Info("skip service update")
-			// err = r.Update(ctx, service)
-			// if err != nil {
-			// 	logger.Error(err, "update service failed")
-			// 	return ctrl.Result{}, err
-			// }
+			err = r.Update(ctx, service)
+			if err != nil {
+				logger.Error(err, "update service failed")
+				return ctrl.Result{}, err
+			}
 		} else {
 			err = r.Delete(ctx, service)
 			if err != nil {
@@ -125,22 +127,24 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	}
 	i := &netv1.Ingress{}
 	err = r.Get(ctx, req.NamespacedName, i)
-	if errors.IsNotFound(err) {
-		if app.Spec.EnabledIngress {
+	if err != nil {
+		if errors.IsNotFound(err) && app.Spec.EnabledIngress {
 			err = r.Create(ctx, ingress)
 			if err != nil {
 				logger.Error(err, "create ingress failed")
 				return ctrl.Result{}, err
 			}
 		}
+		if !errors.IsNotFound(err) && app.Spec.EnabledIngress {
+			return ctrl.Result{}, err
+		}
 	} else {
 		if app.Spec.EnabledIngress {
-			logger.Info("skip ingress update")
-			// err = r.Update(ctx, ingress)
-			// if err != nil {
-			// 	logger.Error(err, "update ingress failed")
-			// 	return ctrl.Result{}, err
-			// }
+			err = r.Update(ctx, ingress)
+			if err != nil {
+				logger.Error(err, "update ingress failed")
+				return ctrl.Result{}, err
+			}
 		} else {
 			err = r.Delete(ctx, ingress)
 			if err != nil {
