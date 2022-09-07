@@ -1,6 +1,9 @@
-apiVersion: ingress.bfmq.com/v1beta1
+apiVersion: ingress.baiding.tech/v1beta1
 kind: App
 metadata:
   name: app-sample
 spec:
-  # TODO(user): Add fields here
+  image: nginx:latest
+  replicas: 1
+  enable_ingress: false #会被修改为true
+  enable_service: false #成功
