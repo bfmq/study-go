@@ -6,4 +6,4 @@ spec:
   image: nginx:latest
   replicas: 1
   enabled_ingress: false #会被修改为true
-  enabled_service: true #成功
+  enabled_service: false #成功

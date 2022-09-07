@@ -4,6 +4,7 @@ metadata:
   name: {{.ObjectMeta.Name}}
   namespace: {{.ObjectMeta.Namespace}}
 spec:
+  type: ClusterIP
   selector:
     app: {{.ObjectMeta.Name}}
   ports:
