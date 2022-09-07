@@ -17,7 +17,9 @@ limitations under the License.
 package v1beta1
 
 import (
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
@@ -43,6 +45,7 @@ func (r *App) Default() {
 	applog.Info("default", "name", r.Name)
 
 	// TODO(user): fill in your defaulting logic.
+	r.Spec.EnabledIngress = !r.Spec.EnabledIngress
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
@@ -50,12 +53,25 @@ func (r *App) Default() {
 
 var _ webhook.Validator = &App{}
 
+func (r *App) ValidateApp() error {
+	if !r.Spec.EnabledService && r.Spec.EnabledIngress {
+		return apierrors.NewInvalid(GroupVersion.WithKind("App").GroupKind(), r.Name,
+			field.ErrorList{
+				field.Invalid(field.NewPath("enabled_service"),
+					r.Spec.EnabledService,
+					"enabled_service should be true when enabled_ingress is true"),
+			},
+		)
+	}
+	return nil
+}
+
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
 func (r *App) ValidateCreate() error {
 	applog.Info("validate create", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object creation.
-	return nil
+	return r.ValidateApp()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
@@ -63,7 +79,7 @@ func (r *App) ValidateUpdate(old runtime.Object) error {
 	applog.Info("validate update", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object update.
-	return nil
+	return r.ValidateApp()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
