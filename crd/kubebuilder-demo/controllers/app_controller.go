@@ -102,11 +102,12 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledService {
-			err = r.Update(ctx, service)
-			if err != nil {
-				logger.Error(err, "update service failed")
-				return ctrl.Result{}, err
-			}
+			logger.Error(err, "skip service update")
+			// err = r.Update(ctx, service)
+			// if err != nil {
+			// 	logger.Error(err, "update service failed")
+			// 	return ctrl.Result{}, err
+			// }
 		} else {
 			err = r.Delete(ctx, service)
 			if err != nil {
@@ -134,11 +135,12 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledIngress {
-			err = r.Update(ctx, ingress)
-			if err != nil {
-				logger.Error(err, "update ingress failed")
-				return ctrl.Result{}, err
-			}
+			logger.Error(err, "skip ingress update")
+			// err = r.Update(ctx, ingress)
+			// if err != nil {
+			// 	logger.Error(err, "update ingress failed")
+			// 	return ctrl.Result{}, err
+			// }
 		} else {
 			err = r.Delete(ctx, ingress)
 			if err != nil {
