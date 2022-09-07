@@ -105,7 +105,7 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledService {
-			logger.Info("skip update")
+			logger.Info("skip service update", s, service)
 		} else {
 			if err := r.Delete(ctx, s); err != nil {
 				return ctrl.Result{}, err
@@ -133,7 +133,7 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledIngress {
-			logger.Info("skip update")
+			logger.Info("skip ingress update", i, ingress)
 		} else {
 			if err := r.Delete(ctx, i); err != nil {
 				return ctrl.Result{}, err
