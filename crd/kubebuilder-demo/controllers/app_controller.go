@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -106,9 +107,11 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledService {
-			if !reflect.DeepEqual(s, service) {
-				logger.Info("skip service update")
-			}
+			fmt.Println(s)
+			fmt.Println(service)
+			// if !reflect.DeepEqual(s, service) {
+			// 	logger.Info("skip service update")
+			// }
 		} else {
 			if err := r.Delete(ctx, s); err != nil {
 				return ctrl.Result{}, err
