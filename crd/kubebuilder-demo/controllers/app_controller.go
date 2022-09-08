@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"reflect"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -105,14 +106,13 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledService {
-			if s != service {
+			if !reflect.DeepEqual(s, service) {
 				logger.Info("skip service update")
 			}
 		} else {
 			if err := r.Delete(ctx, s); err != nil {
 				return ctrl.Result{}, err
 			}
-
 		}
 	}
 
@@ -135,7 +135,7 @@ func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	} else {
 		if app.Spec.EnabledIngress {
-			if i != ingress {
+			if !reflect.DeepEqual(i, ingress) {
 				logger.Info("skip ingress update")
 			}
 		} else {
