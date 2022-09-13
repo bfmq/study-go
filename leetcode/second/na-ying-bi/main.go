@@ -1,18 +1,13 @@
+// https://leetcode.cn/problems/na-ying-bi/
 package main
 
 import "fmt"
 
 func minCount(coins []int) int {
 	var res int
+	// 每次就拿2
 	for _, coin := range coins {
-		// 每次就拿2
-		if coin%2 == 0 {
-			// 偶数直接算次数
-			res += coin / 2
-		} else {
-			// 奇数多拿一次
-			res += coin/2 + 1
-		}
+		res += (coin + 1) / 2
 	}
 	return res
 }
