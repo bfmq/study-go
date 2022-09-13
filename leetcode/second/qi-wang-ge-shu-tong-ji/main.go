@@ -4,6 +4,7 @@ package main
 import "fmt"
 
 func expectNumber(scores []int) int {
+	// 本质就是求set长度
 	hash := make(map[int]bool)
 	for _, score := range scores {
 		hash[score] = false
