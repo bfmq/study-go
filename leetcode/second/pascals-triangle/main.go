@@ -10,7 +10,7 @@ func generate(numRows int) [][]int {
 		// 0跟末尾固定为1
 		res[i][0] = 1
 		res[i][i] = 1
-		
+
 		for j := 1; j < i; j++ {
 			res[i][j] = res[i-1][j] + res[i-1][j-1]
 		}
