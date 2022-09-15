@@ -6,13 +6,15 @@ import (
 )
 
 func climbStairs(n int) int {
-	p, q, r := 0, 0, 1
+	// 左，右，合
+	// 每次循环各自递增即可
+	l, r, all := 0, 0, 1
 	for i := 1; i <= n; i++ {
-		p = q
-		q = r
-		r = p + q
+		l = r
+		r = all
+		all = l + r
 	}
-	return r
+	return all
 }
 
 func main() {
