@@ -1,3 +1,4 @@
+// https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/
 package main
 
 import "fmt"
@@ -16,18 +17,21 @@ func max(x, y int) int {
 	return y
 }
 
+// 数据全部已知是前提
 func maxProfit(prices []int) int {
-	if prices == nil {
+	if len(prices) == 0 {
 		return 0
 	}
-	minNow := prices[0]
-	maxNow := 0
 
+	minPrice := prices[0]
+	maxProfit := 0
+	// 获取可以拿到的最低价
+	// 用今日价格减最低价获得最大利益
 	for _, price := range prices {
-		minNow = min(price, minNow)
-		maxNow = max(maxNow, price-minNow)
+		maxProfit = max(maxProfit, price-minPrice)
+		minPrice = min(minPrice, price)
 	}
-	return maxNow
+	return maxProfit
 }
 
 func main() {
