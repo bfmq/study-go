@@ -1,3 +1,4 @@
+// https://leetcode.cn/problems/climbing-stairs/
 package main
 
 import (
@@ -5,14 +6,13 @@ import (
 )
 
 func climbStairs(n int) int {
-	a := 1
-	b := 1
-
-	for i := 2; i < n+1; i++ {
-		a,b = b,a+b
+	p, q, r := 0, 0, 1
+	for i := 1; i <= n; i++ {
+		p = q
+		q = r
+		r = p + q
 	}
-
-	return b
+	return r
 }
 
 func main() {
