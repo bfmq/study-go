@@ -1,15 +1,18 @@
+// https://leetcode.cn/problems/excel-sheet-column-number/
 package main
 
 import (
 	"fmt"
 )
 
-func titleToNumber(columnTitle string) (result int) {
-	for i, n := len(columnTitle)-1, 1; i >= 0; i, n = i-1, n*26 {
-		column := columnTitle[i] - 'A' + 1
-		result += int(column) * n
+func titleToNumber(columnTitle string) int {
+	var res int
+	for i, j := len(columnTitle)-1, 1; i >= 0; i--  {
+		k := columnTitle[i] - 'A' + 1
+		res += int(k) * j
+		j *= 26
 	}
-	return
+	return res
 }
 
 func main() {
