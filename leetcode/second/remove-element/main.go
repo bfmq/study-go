@@ -7,6 +7,7 @@ import (
 
 func removeElement(nums []int, val int) int {
 	l := 0
+	// 一遍循环一遍重新设置
 	for _, v := range nums {
 		if v != val {
 			nums[l] = v
