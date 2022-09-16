@@ -1,25 +1,24 @@
+// https://leetcode.cn/problems/remove-element/
 package main
 
 import (
 	"fmt"
 )
 
-func removeDuplicates(nums []int) (result int) {
-	// 从后向前处理不会影响元数组下标
-	for j := len(nums) - 1; j > 0; j-- {
-		if nums[j] == nums[j-1] {
-			// 如果当前下标与前一个下标数字相同，则要被清理
-			nums = append(nums[:j], nums[j+1:]...)
+func removeElement(nums []int, val int) int {
+	l := 0
+	for _, v := range nums {
+		if v != val {
+			nums[l] = v
+			l++
 		}
 	}
-	return len(nums)
+	return l
 }
 
 func main() {
-	result := removeDuplicates([]int{0, 0, 1, 1, 1, 2, 2, 3, 3, 4})
+	result := removeElement([]int{3, 2, 2, 3}, 3)
 	fmt.Println(result)
-	result = removeDuplicates([]int{1, 1, 2})
-	fmt.Println(result)
-	result = removeDuplicates([]int{1, 1, 1, 1, 1, 1, 1, 1})
+	result = removeElement([]int{0, 1, 2, 2, 3, 0, 4, 2}, 2)
 	fmt.Println(result)
 }
