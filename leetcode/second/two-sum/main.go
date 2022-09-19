@@ -1,3 +1,4 @@
+// https://leetcode.cn/problems/two-sum/
 package main
 
 import "fmt"
@@ -18,7 +19,7 @@ func twoSum(nums []int, target int) []int {
 	}
 
 	// 题目声明一定会有结果，这里其实永远不会返回
-	return []int{}
+	return nil
 }
 
 func main() {
