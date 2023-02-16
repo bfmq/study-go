@@ -10,7 +10,7 @@ func reversePrint(head *ListNode) []int {
 	if head == nil {
 		return nil
 	}
-	
+
 	var pre *ListNode
 	cur := head
 	for cur != nil {

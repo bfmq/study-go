@@ -1,4 +1,4 @@
-//https://leetcode.cn/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
+// https://leetcode.cn/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
 package main
 
 func exchange(nums []int) []int {
@@ -13,7 +13,7 @@ func exchange(nums []int) []int {
 		if l < r {
 			nums[l], nums[r] = nums[r], nums[l]
 			l++
-
+			r--
 		}
 	}
 	return nums

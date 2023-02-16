@@ -11,16 +11,15 @@ func isSymmetric(root *TreeNode) bool {
 	if root == nil {
 		return true
 	}
-
-	var check func(p, q *TreeNode) bool
-	check = func(p, q *TreeNode) bool {
-		if p == nil && q == nil {
+	var check func(*TreeNode, *TreeNode) bool
+	check = func(tn1, tn2 *TreeNode) bool {
+		if tn1 == nil && tn2 == nil {
 			return true
 		}
-		if p == nil || q == nil {
+		if tn1 == nil || tn2 == nil {
 			return false
 		}
-		return p.Val == q.Val && check(p.Left, q.Right) && check(p.Right, q.Left)
+		return tn1.Val == tn2.Val && check(tn1.Left, tn2.Right) && check(tn1.Right, tn2.Left)
 	}
 	return check(root, root)
 }

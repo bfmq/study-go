@@ -1,4 +1,4 @@
-// https://leetcode.cn/problems/fan-zhuan-lian-biao-lcof/
+// https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/
 package main
 
 type ListNode struct {
@@ -6,20 +6,16 @@ type ListNode struct {
 	Next *ListNode
 }
 
-func reverseList(head *ListNode) *ListNode {
-	if head == nil {
-		return nil
+func getKthFromEnd(head *ListNode, k int) *ListNode {
+	quick, slow := head, head
+	for i := 0; i < k; i++ {
+		quick = quick.Next
 	}
-
-	var pre *ListNode
-	cur := head
-	for cur != nil {
-		next := cur.Next
-		cur.Next = pre
-		pre = cur
-		cur = next
+	for quick != nil {
+		quick = quick.Next
+		slow = slow.Next
 	}
-	return pre
+	return slow
 }
 
 func main() {
