@@ -13,41 +13,42 @@ type NodeInfo struct {
 }
 
 func verticalTraversal(root *TreeNode) [][]int {
-	var allNode []*NodeInfo
+	var nodes []*NodeInfo
 	var dfs func(*TreeNode, int, int)
 	dfs = func(node *TreeNode, row, col int) {
 		if node == nil {
 			return
 		}
-		allNode = append(allNode, &NodeInfo{row: row, col: col, val: node.Val})
+		nodes = append(nodes, &NodeInfo{row: row, col: col, val: node.Val})
 		dfs(node.Left, row+1, col-1)
 		dfs(node.Right, row+1, col+1)
 	}
 	dfs(root, 0, 0)
 
-	sort.Slice(allNode, func(i, j int) bool {
-		if allNode[i].col != allNode[j].col {
-			return allNode[i].col < allNode[j].col
+	sort.Slice(nodes, func(i, j int) bool {
+		x, y := nodes[i], nodes[j]
+		if x.col != y.col {
+			return x.col < y.col
 		}
-		if allNode[i].row != allNode[j].row {
-			return allNode[i].row < allNode[j].row
+		if x.row != y.row {
+			return x.row < y.row
 		}
-		return allNode[i].val < allNode[j].val
+		return x.val < y.val
 	})
 
 	var res [][]int
-	cur := []int{allNode[0].val}
-	preCol := allNode[0].col
-	for i := 1; i < len(allNode); i++ {
-		node := allNode[i]
+	cur := []int{nodes[0].val}
+	preCol := nodes[0].col
+	for i := 1; i < len(nodes); i++ {
+		node := nodes[i]
 		col := node.col
 		val := node.val
-		if preCol == col {
+		if col == preCol {
 			cur = append(cur, val)
 		} else {
 			res = append(res, cur)
-			preCol = col
 			cur = []int{val}
+			preCol = node.col
 		}
 	}
 	res = append(res, cur)

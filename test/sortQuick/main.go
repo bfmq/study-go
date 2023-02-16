@@ -4,23 +4,23 @@ import "fmt"
 
 func quickSort(arr []int, low, high int) []int {
 	if low < high {
-		left, right := low, high
-		p := arr[low+(high-low)>>1]
-		for left <= right {
-			for arr[left] < p {
-				left++
+		l, r := low, high
+		p := arr[l+(r-l)>>1]
+		for l <= r {
+			for arr[l] < p {
+				l++
 			}
-			for arr[right] > p {
-				right--
+			for arr[r] > p {
+				r--
 			}
-			if left <= right {
-				arr[left], arr[right] = arr[right], arr[left]
-				left++
-				right--
+			if l < r {
+				arr[l], arr[r] = arr[r], arr[l]
+				l++
+				r--
 			}
 		}
-		quickSort(arr, low, right)
-		quickSort(arr, left, high)
+		quickSort(arr, low, r)
+		quickSort(arr, l, high)
 	}
 	return arr
 }

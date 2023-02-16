@@ -9,20 +9,20 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	if headA == nil || headB == nil {
 		return nil
 	}
-	heada, headb := headA, headB
-	for heada != headb {
-		if heada != nil {
-			heada = heada.Next
+	ha, hb := headA, headB
+	for ha != hb {
+		if ha != nil {
+			ha = ha.Next
 		} else {
-			heada = headB
+			ha = headB
 		}
-		if headb != nil {
-			headb = headb.Next
+		if hb != nil {
+			hb = hb.Next
 		} else {
-			headb = headA
+			hb = headA
 		}
 	}
-	return heada
+	return ha
 }
 
 func main() {
