@@ -1,3 +1,4 @@
+// https://leetcode.cn/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/
 package main
 
 type ListNode struct {
@@ -26,5 +27,4 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 }
 
 func main() {
-
 }
